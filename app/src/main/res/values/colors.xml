@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Core brand and semantic colors -->
+    <color name="primary">#0F4C81</color>
+    <color name="primaryDark">#0A355B</color>
+    <color name="accent">#2BB673</color>
+    <color name="background">#F5F7FA</color>
+    <color name="surface">#FFFFFFFF</color>
+    <color name="textPrimary">#1F2937</color>
+    <color name="textSecondary">#6B7280</color>
+    <color name="errorRed">#D32F2F</color>
+
+    <!-- Expense category colors -->
+    <color name="categoryFood">#F59E0B</color>
+    <color name="categoryTransport">#3B82F6</color>
+    <color name="categoryBills">#8B5CF6</color>
+    <color name="categoryShopping">#EC4899</color>
+    <color name="categoryHealth">#10B981</color>
+    <color name="categoryOther">#9CA3AF</color>
 </resources>
