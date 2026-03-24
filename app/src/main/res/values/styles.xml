@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base app theme -->
+    <style name="Theme.BudgetMaxxer" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryContainer">@color/primaryDark</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorError">@color/errorRed</item>
+        <item name="android:textColorPrimary">@color/textPrimary</item>
+        <item name="android:textColorSecondary">@color/textSecondary</item>
+    </style>
+
+    <!-- CardView styling -->
+    <style name="BudgetMaxxer.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="contentPadding">12dp</item>
+    </style>
+
+    <!-- Primary filled button style -->
+    <style name="BudgetMaxxer.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/surface</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+    </style>
+
+    <!-- TextInputLayout style for forms -->
+    <style name="BudgetMaxxer.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="boxStrokeColor">@color/primary</item>
+        <item name="hintTextColor">@color/textSecondary</item>
+        <item name="errorTextColor">@color/errorRed</item>
+        <item name="helperTextTextColor">@color/textSecondary</item>
+    </style>
+
+</resources>
