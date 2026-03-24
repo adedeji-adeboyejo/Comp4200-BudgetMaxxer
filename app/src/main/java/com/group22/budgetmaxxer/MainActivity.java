@@ -1,6 +1,8 @@
 package com.group22.budgetmaxxer;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,18 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        Button btnTestAdd = findViewById(R.id.btnTestAdd);
+        Button btnTestEdit = findViewById(R.id.btnTestEdit);
+
+        btnTestAdd.setOnClickListener(v ->
+                startActivity(new Intent(this, AddExpenseActivity.class)));
+
+        btnTestEdit.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddExpenseActivity.class);
+            intent.putExtra("EXPENSE_ID", 1);
+            startActivity(intent);
         });
     }
 }
