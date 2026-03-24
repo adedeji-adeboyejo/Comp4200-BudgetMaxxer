@@ -39,4 +39,7 @@ public interface ExpenseDao {
     // 5 most recent (for Dashboard)
     @Query("SELECT * FROM expenses ORDER BY created_at DESC LIMIT 5")
     LiveData<List<Expense>> getRecentExpenses();
+
+    @Query("SELECT * FROM expenses WHERE id = :id LIMIT 1")
+    Expense getExpenseById(int id);
 }

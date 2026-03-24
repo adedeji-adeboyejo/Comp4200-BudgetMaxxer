@@ -2,7 +2,6 @@ package com.group22.budgetmaxxer;
 
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,21 +14,29 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import com.group22.budgetmaxxer.database.Category;
+import com.group22.budgetmaxxer.database.Expense;
+import com.group22.budgetmaxxer.viewmodel.ExpenseViewModel;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class AddExpenseActivity extends AppCompatActivity {
 
-    private static final String EXTRA_EXPENSE_ID = "EXPENSE_ID";
+    public static final String EXTRA_EXPENSE_ID = "EXPENSE_ID";
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault());
+    private static final DateTimeFormatter DB_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private ExpenseViewModel expenseViewModel;
+    private List<Category> allCategories;
 
     private MaterialToolbar toolbar;
     private TextInputLayout tilAmount;
@@ -41,9 +48,8 @@ public class AddExpenseActivity extends AppCompatActivity {
 
     private final Map<MaterialCardView, String> categoryCards = new LinkedHashMap<>();
     private MaterialCardView selectedCard;
-    private String selectedCategory;
+    private String selectedCategoryName;
     private LocalDate selectedDate = LocalDate.now();
-
     private int expenseId = -1;
     private boolean isEditMode = false;
 
@@ -58,9 +64,14 @@ public class AddExpenseActivity extends AppCompatActivity {
         setupToolbar();
         setupCategorySelector();
         setupDatePickerButton();
-        configureModeFromIntent();
         setupActionButtons();
         updateDateButtonText();
+
+        // Load categories from Room then configure mode
+        expenseViewModel.mAllCategories.observe(this, categories -> {
+            allCategories = categories;
+            configureModeFromIntent();
+        });
     }
 
     private void bindViews() {
@@ -109,7 +120,6 @@ public class AddExpenseActivity extends AppCompatActivity {
                 return;
             }
         }
-
         isEditMode = false;
         toolbar.setTitle("Add Expense");
         btnDeleteExpense.setVisibility(android.view.View.GONE);
@@ -121,97 +131,115 @@ public class AddExpenseActivity extends AppCompatActivity {
     }
 
     private void loadExpense(int id) {
-        Expense expense = expenseViewModel.getExpenseById(id);
-        if (expense == null) {
-            Toast.makeText(this, "Expense not found", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        com.group22.budgetmaxxer.database.AppDatabase.databaseWriteExecutor.execute(() -> {
+            Expense expense = com.group22.budgetmaxxer.database.AppDatabase
+                    .getDatabase(getApplication())
+                    .expenseDao()
+                    .getExpenseById(id);
 
-        etAmount.setText(String.valueOf(expense.getAmount()));
-        etDescription.setText(expense.getDescription());
-        selectedDate = expense.getDate();
-        updateDateButtonText();
-        selectCategoryByName(expense.getCategory());
-    }
+            runOnUiThread(() -> {
+                if (expense == null) {
+                    Toast.makeText(this, "Expense not found", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+                etAmount.setText(String.valueOf(expense.getAmount()));
+                etDescription.setText(expense.getDescription());
+                selectedDate = LocalDate.parse(expense.getDate(), DB_FORMATTER);
+                updateDateButtonText();
 
-    private void openDatePicker() {
-        MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
-                .setSelection(toUtcMillis(selectedDate))
-                .build();
-
-        picker.addOnPositiveButtonClickListener(selection -> {
-            selectedDate = fromUtcMillis(selection);
-            updateDateButtonText();
+                if (allCategories != null) {
+                    for (Category c : allCategories) {
+                        if (c.getId() == expense.getCategoryId()) {
+                            selectCategoryByName(c.getName());
+                            break;
+                        }
+                    }
+                }
+            });
         });
-        picker.show(getSupportFragmentManager(), "expense_date_picker");
     }
 
     private void saveExpense() {
         tilAmount.setError(null);
-
-        String amountText = toSafeString(etAmount.getText()).trim();
-        String descriptionText = toSafeString(etDescription.getText()).trim();
+        String amountText = etAmount.getText() == null ? "" : etAmount.getText().toString().trim();
+        String descriptionText = etDescription.getText() == null ? "" : etDescription.getText().toString().trim();
 
         if (amountText.isEmpty()) {
             tilAmount.setError("Please enter an amount");
             return;
         }
-
         double amount;
         try {
             amount = Double.parseDouble(amountText);
         } catch (NumberFormatException ex) {
-            tilAmount.setError("Please enter an amount");
+            tilAmount.setError("Invalid amount");
             return;
         }
-
         if (amount <= 0) {
             tilAmount.setError("Amount must be greater than 0");
             return;
         }
-
-        if (selectedCategory == null) {
+        if (selectedCategoryName == null) {
             Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (selectedDate.isAfter(LocalDate.now())) {
-            Toast.makeText(this, "Warning: selected date is in the future", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Warning: date is in the future", Toast.LENGTH_LONG).show();
         }
+
+        int categoryId = 1;
+        if (allCategories != null) {
+            for (Category c : allCategories) {
+                if (c.getName().equals(selectedCategoryName)) {
+                    categoryId = c.getId();
+                    break;
+                }
+            }
+        }
+
+        String dateString = selectedDate.format(DB_FORMATTER);
 
         if (isEditMode) {
-            expenseViewModel.updateExpense(
-                    expenseId,
-                    amount,
-                    selectedCategory,
-                    descriptionText,
-                    selectedDate
-            );
+            final int finalCategoryId = categoryId;
+            com.group22.budgetmaxxer.database.AppDatabase.databaseWriteExecutor.execute(() -> {
+                Expense existing = com.group22.budgetmaxxer.database.AppDatabase
+                        .getDatabase(getApplication())
+                        .expenseDao()
+                        .getExpenseById(expenseId);
+                if (existing != null) {
+                    existing.setAmount(amount);
+                    existing.setCategoryId(finalCategoryId);
+                    existing.setDescription(descriptionText);
+                    existing.setDate(dateString);
+                    expenseViewModel.update(existing);
+                }
+            });
         } else {
-            expenseViewModel.insertExpense(
-                    amount,
-                    selectedCategory,
-                    descriptionText,
-                    selectedDate
+            Expense newExpense = new Expense(
+                    amount, categoryId, descriptionText,
+                    dateString, System.currentTimeMillis()
             );
+            expenseViewModel.insert(newExpense);
         }
-
+        Toast.makeText(this, "Expense saved!", Toast.LENGTH_SHORT).show();
         finish();
     }
 
     private void confirmDeleteExpense() {
-        if (!isEditMode || expenseId <= 0) {
-            return;
-        }
-
+        if (!isEditMode || expenseId <= 0) return;
         new AlertDialog.Builder(this)
                 .setTitle("Delete Expense")
                 .setMessage("Are you sure you want to delete this expense?")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    expenseViewModel.deleteExpense(expenseId);
+                    com.group22.budgetmaxxer.database.AppDatabase.databaseWriteExecutor.execute(() -> {
+                        Expense expense = com.group22.budgetmaxxer.database.AppDatabase
+                                .getDatabase(getApplication())
+                                .expenseDao()
+                                .getExpenseById(expenseId);
+                        if (expense != null) expenseViewModel.delete(expense);
+                    });
                     finish();
                 })
                 .show();
@@ -231,9 +259,8 @@ public class AddExpenseActivity extends AppCompatActivity {
             selectedCard.setStrokeWidth(0);
             selectedCard.setChecked(false);
         }
-
         selectedCard = card;
-        selectedCategory = category;
+        selectedCategoryName = category;
         selectedCard.setStrokeColor(getColor(R.color.primary));
         selectedCard.setStrokeWidth(dpToPx(2));
         selectedCard.setChecked(true);
@@ -243,20 +270,21 @@ public class AddExpenseActivity extends AppCompatActivity {
         btnDatePicker.setText(selectedDate.format(DATE_FORMATTER));
     }
 
-    private long toUtcMillis(LocalDate localDate) {
-        return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-    }
-
-    private LocalDate fromUtcMillis(long utcMillis) {
-        return Instant.ofEpochMilli(utcMillis).atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
-    private String toSafeString(CharSequence value) {
-        return value == null ? "" : value.toString();
+    private void openDatePicker() {
+        MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select date")
+                .setSelection(selectedDate.atStartOfDay(ZoneId.systemDefault())
+                        .toInstant().toEpochMilli())
+                .build();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            selectedDate = Instant.ofEpochMilli(selection)
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
+            updateDateButtonText();
+        });
+        picker.show(getSupportFragmentManager(), "expense_date_picker");
     }
 
     private int dpToPx(int dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 }
