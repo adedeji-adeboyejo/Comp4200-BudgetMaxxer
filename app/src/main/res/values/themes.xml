@@ -2,7 +2,14 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.BudgetMaxxer" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryContainer">@color/primaryDark</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorError">@color/errorRed</item>
+        <item name="android:textColorPrimary">@color/textPrimary</item>
+        <item name="android:textColorSecondary">@color/textSecondary</item>
     </style>
 
     <style name="Theme.BudgetMaxxer" parent="Base.Theme.BudgetMaxxer" />

@@ -52,6 +52,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private LocalDate selectedDate = LocalDate.now();
     private int expenseId = -1;
     private boolean isEditMode = false;
+    private long originalCreatedAt = 0; // Added to preserve original creation time when editing
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,6 @@ public class AddExpenseActivity extends AppCompatActivity {
         setupActionButtons();
         updateDateButtonText();
 
-        // Load categories from Room then configure mode
         expenseViewModel.mAllCategories.observe(this, categories -> {
             allCategories = categories;
             configureModeFromIntent();
@@ -143,6 +143,9 @@ public class AddExpenseActivity extends AppCompatActivity {
                     finish();
                     return;
                 }
+
+                originalCreatedAt = expense.getCreatedAt(); // Save this so we don't overwrite it!
+
                 etAmount.setText(String.valueOf(expense.getAmount()));
                 etDescription.setText(expense.getDescription());
                 selectedDate = LocalDate.parse(expense.getDate(), DB_FORMATTER);
@@ -161,6 +164,9 @@ public class AddExpenseActivity extends AppCompatActivity {
     }
 
     private void saveExpense() {
+        // Prevent saving if categories haven't loaded yet
+        if (allCategories == null) return;
+
         tilAmount.setError(null);
         String amountText = etAmount.getText() == null ? "" : etAmount.getText().toString().trim();
         String descriptionText = etDescription.getText() == null ? "" : etDescription.getText().toString().trim();
@@ -189,39 +195,29 @@ public class AddExpenseActivity extends AppCompatActivity {
         }
 
         int categoryId = 1;
-        if (allCategories != null) {
-            for (Category c : allCategories) {
-                if (c.getName().equals(selectedCategoryName)) {
-                    categoryId = c.getId();
-                    break;
-                }
+        for (Category c : allCategories) {
+            if (c.getName().equals(selectedCategoryName)) {
+                categoryId = c.getId();
+                break;
             }
         }
 
         String dateString = selectedDate.format(DB_FORMATTER);
 
         if (isEditMode) {
-            final int finalCategoryId = categoryId;
-            com.group22.budgetmaxxer.database.AppDatabase.databaseWriteExecutor.execute(() -> {
-                Expense existing = com.group22.budgetmaxxer.database.AppDatabase
-                        .getDatabase(getApplication())
-                        .expenseDao()
-                        .getExpenseById(expenseId);
-                if (existing != null) {
-                    existing.setAmount(amount);
-                    existing.setCategoryId(finalCategoryId);
-                    existing.setDescription(descriptionText);
-                    existing.setDate(dateString);
-                    expenseViewModel.update(existing);
-                }
-            });
+            // Reconstruct the expense and give it the existing ID to overwrite it in Room
+            Expense updatedExpense = new Expense(
+                    amount, categoryId, descriptionText, dateString, originalCreatedAt
+            );
+            updatedExpense.setId(expenseId);
+            expenseViewModel.update(updatedExpense);
         } else {
             Expense newExpense = new Expense(
-                    amount, categoryId, descriptionText,
-                    dateString, System.currentTimeMillis()
+                    amount, categoryId, descriptionText, dateString, System.currentTimeMillis()
             );
             expenseViewModel.insert(newExpense);
         }
+
         Toast.makeText(this, "Expense saved!", Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -233,13 +229,10 @@ public class AddExpenseActivity extends AppCompatActivity {
                 .setMessage("Are you sure you want to delete this expense?")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    com.group22.budgetmaxxer.database.AppDatabase.databaseWriteExecutor.execute(() -> {
-                        Expense expense = com.group22.budgetmaxxer.database.AppDatabase
-                                .getDatabase(getApplication())
-                                .expenseDao()
-                                .getExpenseById(expenseId);
-                        if (expense != null) expenseViewModel.delete(expense);
-                    });
+                    // Room only needs the ID to delete a row
+                    Expense dummyExpense = new Expense(0, 0, "", "", 0);
+                    dummyExpense.setId(expenseId);
+                    expenseViewModel.delete(dummyExpense);
                     finish();
                 })
                 .show();

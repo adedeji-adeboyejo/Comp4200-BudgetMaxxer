@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity { // Fixed capital 'P'
 
     private ExpenseViewModel mViewModel;
     private TextView tvMonthTotal;
@@ -43,11 +43,18 @@ public class DashboardActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this).get(ExpenseViewModel.class);
 
+        // 1. Observe lists for the RecyclerView
         mViewModel.mRecentExpenses.observe(this, adapter::setExpenses);
         mViewModel.mAllCategories.observe(this, adapter::setCategories);
 
-        updateMonthLabel();
-        observeMonthTotal();
+        // 2. Observe the month total EXACTLY ONCE here to prevent memory leaks/glitches
+        mViewModel.monthTotal.observe(this, total -> {
+            double amount = total == null ? 0.0 : total;
+            tvMonthTotal.setText(String.format(Locale.getDefault(), "$%.2f", amount));
+        });
+
+        // 3. Initialize the UI and trigger the first database fetch
+        updateMonthData();
 
         FloatingActionButton fab = findViewById(R.id.fabAddExpense);
         fab.setOnClickListener(v ->
@@ -56,29 +63,24 @@ public class DashboardActivity extends AppCompatActivity {
 
         findViewById(R.id.btnPrevMonth).setOnClickListener(v -> {
             currentMonth = currentMonth.minusMonths(1);
-            updateMonthLabel();
-            observeMonthTotal();
+            updateMonthData();
         });
 
         findViewById(R.id.btnNextMonth).setOnClickListener(v -> {
             currentMonth = currentMonth.plusMonths(1);
-            updateMonthLabel();
-            observeMonthTotal();
+            updateMonthData();
         });
     }
 
-    private void updateMonthLabel() {
+    private void updateMonthData() {
+        // Update the text label visually
         tvMonthLabel.setText(currentMonth.format(
                 DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
         ));
-    }
 
-    private void observeMonthTotal() {
+        // Tell the ViewModel to swap the database query to the new month
         String pattern = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-%";
-        mViewModel.getTotalForMonth(pattern).observe(this, total -> {
-            double amount = total == null ? 0.0 : total;
-            tvMonthTotal.setText(String.format(Locale.getDefault(), "$%.2f", amount));
-        });
+        mViewModel.setMonthFilter(pattern);
     }
 
     @Override
