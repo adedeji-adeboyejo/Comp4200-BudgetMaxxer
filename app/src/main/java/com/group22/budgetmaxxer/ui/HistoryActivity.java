@@ -31,7 +31,7 @@ public class HistoryActivity extends AppCompatActivity {
             // NOTE: If Member 2 hasn't created AddExpenseActivity yet, this might show red!
             // You can comment out the Intent lines temporarily if needed.
             Intent intent = new Intent(this, com.group22.budgetmaxxer.AddExpenseActivity.class);
-            intent.putExtra("expense_id", expense.getId());
+            intent.putExtra("Expense_ID", expense.getId());
             startActivity(intent);
         });
         recyclerView.setAdapter(mAdapter);

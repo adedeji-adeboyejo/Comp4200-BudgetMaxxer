@@ -41,24 +41,16 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation("androidx.gridlayout:gridlayout:1.0.0")
-    //room
-    implementation("andriodx.room:room-runtime:2.6.1")
-    annotationProcessor("andriodx.room:room-compiler:2.6.1")
 
-    //LiveData + ViewModel
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+    // LiveData + ViewModel
     implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-// Room
-    implementation("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-
-// LiveData + ViewModel
-    implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
 }

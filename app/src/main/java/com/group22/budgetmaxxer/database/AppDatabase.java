@@ -48,12 +48,12 @@ public abstract class AppDatabase extends RoomDatabase {
                     // Seed categories in the background
                     databaseWriteExecutor.execute(() -> {
                         CategoryDao dao = INSTANCE.categoryDao();
-                        dao.insert(new Category("Food",      "🍔", "#FF6B6B"));
-                        dao.insert(new Category("Transport", "🚌", "#4ECDC4"));
-                        dao.insert(new Category("Bills",     "💡", "#45B7D1"));
-                        dao.insert(new Category("Shopping",  "🛍️", "#96CEB4"));
-                        dao.insert(new Category("Health",    "💊", "#FFEAA7"));
-                        dao.insert(new Category("Other",     "📦", "#DDA0DD"));
+                        dao.insert(new Category("Food",      "🍔", "#F59E0B"));
+                        dao.insert(new Category("Transport", "🚌", "#3B82F6"));
+                        dao.insert(new Category("Bills",     "💡", "#8B5CF6"));
+                        dao.insert(new Category("Shopping",  "🛍️", "#EC4899"));
+                        dao.insert(new Category("Health",    "💊", "#10B981"));
+                        dao.insert(new Category("Other",     "📦", "#9CA3AF"));
                     });
                 }
             };
