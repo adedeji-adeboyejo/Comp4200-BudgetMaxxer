@@ -50,6 +50,11 @@ public class SummaryActivity extends AppCompatActivity {
             // adapter.setCategories(categories);
         });
 
+        mViewModel.monthTotal.observe(this, total -> {
+            double monthlyTotal = total == null ? 0.0 : total;
+            tvSummaryTotal.setText(String.format(Locale.getDefault(), "$%.2f", monthlyTotal));
+        });
+
         setupMonthNavigation();
         updateMonthData();
     }
@@ -67,28 +72,16 @@ public class SummaryActivity extends AppCompatActivity {
     }
 
     private void updateMonthData() {
-        // Update Label
         tvSummaryMonthLabel.setText(currentMonth.format(
                 DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
         ));
 
+        // This updates currentMonthFilter → switchMap fires → monthTotal delivers to observer above
         String pattern = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-%";
-
-        // Ensure switchMap updates the total
         mViewModel.setMonthFilter(pattern);
 
-        // 1. Observe the total for the selected month
-        mViewModel.monthTotal.observe(this, total -> {
-            double monthlyTotal = total == null ? 0.0 : total;
-            tvSummaryTotal.setText(String.format(Locale.getDefault(), "$%.2f", monthlyTotal));
-
-            // Pass the total down to the adapter so it can calculate percentages!
-            // if (adapter != null) adapter.setMonthlyTotal(monthlyTotal);
-        });
-
-        // 2. Observe the category breakdown for the selected month
+        // Category breakdown will go here once SummaryAdapter is built
         mViewModel.getTotalsByCategory(pattern).observe(this, categoryTotals -> {
-            // Because your query groups by category_id, categories with $0 are automatically hidden!
             // adapter.setCategoryTotals(categoryTotals);
         });
     }
