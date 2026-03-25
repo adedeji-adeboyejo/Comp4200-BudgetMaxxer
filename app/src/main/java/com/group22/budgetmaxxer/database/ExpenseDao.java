@@ -1,6 +1,7 @@
 package com.group22.budgetmaxxer.database;
 
 import androidx.lifecycle.LiveData;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -11,7 +12,7 @@ import java.util.List;
 @Dao
 public interface ExpenseDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Expense expense);
 
     @Update
