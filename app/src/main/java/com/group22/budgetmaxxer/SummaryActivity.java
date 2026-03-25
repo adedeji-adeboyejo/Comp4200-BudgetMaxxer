@@ -7,12 +7,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.group22.budgetmaxxer.database.Category;
+import com.group22.budgetmaxxer.ui.SummaryAdapter;
 import com.group22.budgetmaxxer.viewmodel.ExpenseViewModel;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 
 public class SummaryActivity extends AppCompatActivity {
@@ -21,10 +19,7 @@ public class SummaryActivity extends AppCompatActivity {
     private TextView tvSummaryMonthLabel;
     private TextView tvSummaryTotal;
     private LocalDate currentMonth = LocalDate.now();
-    private List<Category> allCategories;
-
-    // You will need to build this adapter to show the progress bars!
-    // private SummaryAdapter adapter;
+    private SummaryAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,20 +34,23 @@ public class SummaryActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerSummary);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        // adapter = new SummaryAdapter();
-        // recyclerView.setAdapter(adapter);
+        adapter = new SummaryAdapter();
+        recyclerView.setAdapter(adapter);
 
         mViewModel = new ViewModelProvider(this).get(ExpenseViewModel.class);
 
-        // Load categories so we can match IDs to names and colors
+        // Observed once — categories passed to adapter for name/icon/color lookup
         mViewModel.mAllCategories.observe(this, categories -> {
-            allCategories = categories;
-            // adapter.setCategories(categories);
+            adapter.setCategories(categories);
         });
 
+        // Observed once in onCreate — not inside updateMonthData to prevent stacking
         mViewModel.monthTotal.observe(this, total -> {
             double monthlyTotal = total == null ? 0.0 : total;
-            tvSummaryTotal.setText(String.format(Locale.getDefault(), "$%.2f", monthlyTotal));
+            tvSummaryTotal.setText(
+                    String.format(Locale.getDefault(), "$%.2f", monthlyTotal)
+            );
+            adapter.setMonthlyTotal(monthlyTotal);
         });
 
         setupMonthNavigation();
@@ -64,7 +62,6 @@ public class SummaryActivity extends AppCompatActivity {
             currentMonth = currentMonth.minusMonths(1);
             updateMonthData();
         });
-
         findViewById(R.id.btnSummaryNextMonth).setOnClickListener(v -> {
             currentMonth = currentMonth.plusMonths(1);
             updateMonthData();
@@ -76,13 +73,17 @@ public class SummaryActivity extends AppCompatActivity {
                 DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
         ));
 
-        // This updates currentMonthFilter → switchMap fires → monthTotal delivers to observer above
-        String pattern = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")) + "-%";
+        String pattern = currentMonth.format(
+                DateTimeFormatter.ofPattern("yyyy-MM")
+        ) + "-%";
+
+        // Triggers switchMap in ViewModel → monthTotal observer above fires automatically
         mViewModel.setMonthFilter(pattern);
 
-        // Category breakdown will go here once SummaryAdapter is built
+        // getTotalsByCategory returns a new LiveData object each call,
+        // so each observe() is on a different object — not the same stacking problem
         mViewModel.getTotalsByCategory(pattern).observe(this, categoryTotals -> {
-            // adapter.setCategoryTotals(categoryTotals);
+            adapter.setCategoryTotals(categoryTotals);
         });
     }
 }
