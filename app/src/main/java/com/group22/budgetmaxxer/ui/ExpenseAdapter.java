@@ -1,5 +1,6 @@
 package com.group22.budgetmaxxer.ui;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,16 +58,35 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         // Find matching category
         Category cat = null;
         for (Category c : mCategories) {
-            if (c.getId() == expense.getCategoryId()) { cat = c; break; }
+            if (c.getId() == expense.getCategoryId()) {
+                cat = c;
+                break;
+            }
         }
 
         holder.tvAmount.setText(String.format("$%.2f", expense.getAmount()));
         holder.tvDate.setText(expense.getDate());
-        holder.tvDescription.setText(expense.getDescription() != null ? expense.getDescription() : "");
+        holder.tvDescription.setText(
+                expense.getDescription() != null ? expense.getDescription() : ""
+        );
 
         if (cat != null) {
             holder.tvIcon.setText(cat.getIcon());
             holder.tvCategory.setText(cat.getName());
+
+            // Apply category color to the left border strip
+            try {
+                holder.viewCategoryColor.setBackgroundColor(
+                        Color.parseColor(cat.getColor())
+                );
+            } catch (IllegalArgumentException e) {
+                // Malformed hex string — fall back to grey
+                holder.viewCategoryColor.setBackgroundColor(Color.LTGRAY);
+            }
+        } else {
+            holder.tvIcon.setText("📦");
+            holder.tvCategory.setText("Unknown");
+            holder.viewCategoryColor.setBackgroundColor(Color.LTGRAY);
         }
 
         holder.itemView.setOnClickListener(v -> mListener.onExpenseClick(expense));
@@ -77,6 +97,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
     static class ExpenseViewHolder extends RecyclerView.ViewHolder {
         TextView tvIcon, tvCategory, tvDescription, tvDate, tvAmount;
+        View viewCategoryColor; // ✅ new
 
         ExpenseViewHolder(View itemView) {
             super(itemView);
@@ -85,6 +106,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvDate = itemView.findViewById(R.id.tvDate);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            viewCategoryColor = itemView.findViewById(R.id.viewCategoryColor); // ✅ new
         }
     }
 }
