@@ -1,5 +1,9 @@
 *.iml
+.idea/
 .gradle
+gradle/wrapper/gradle-wrapper.jar
+*.ipr
+*.iws
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -13,3 +17,32 @@
 .externalNativeBuild
 .cxx
 local.properties
+app/build/
+*.local.properties
+ 
+# Signing keystore filese
+*.jks
+*.keystore
+keystore.properties
+
+lint/
+*.lint.xml
+ 
+# ProGuard mapping files (generated on release build)
+app/proguard-mapping.txt
+ 
+# Test results
+test-results/
+.test-results/
+ 
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+ 
+# Linux
+*~
+
+# IntelliJ/Android Studio backup files
+*.orig
+*.bak
