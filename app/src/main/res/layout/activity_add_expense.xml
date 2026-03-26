@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -94,9 +95,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:columnCount="3"
-                android:rowCount="2"
-                android:useDefaultMargins="true">
+                app:columnCount="3"
+                app:rowCount="2"
+                app:useDefaultMargins="true"
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardCategoryFood"
@@ -106,25 +107,23 @@
                     android:layout_margin="6dp"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="Food"
-                            android:src="@android:drawable/ic_menu_crop" />
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🍔"
+                            android:textSize="28sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Food"
+                            android:textSize="12sp"
                             android:textColor="@color/textPrimary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -137,25 +136,23 @@
                     android:layout_margin="6dp"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="Transport"
-                            android:src="@android:drawable/ic_menu_directions" />
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🚌"
+                            android:textSize="28sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Transport"
+                            android:textSize="12sp"
                             android:textColor="@color/textPrimary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -168,25 +165,23 @@
                     android:layout_margin="6dp"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="Bills"
-                            android:src="@android:drawable/ic_menu_agenda" />
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💡"
+                            android:textSize="28sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Bills"
+                            android:textSize="12sp"
                             android:textColor="@color/textPrimary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -199,25 +194,23 @@
                     android:layout_margin="6dp"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="Shopping"
-                            android:src="@android:drawable/ic_menu_add" />
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🛍️"
+                            android:textSize="28sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Shopping"
+                            android:textSize="12sp"
                             android:textColor="@color/textPrimary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -230,25 +223,23 @@
                     android:layout_margin="6dp"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="Health"
-                            android:src="@android:drawable/ic_menu_info_details" />
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💊"
+                            android:textSize="28sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Health"
+                            android:textSize="12sp"
                             android:textColor="@color/textPrimary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -261,28 +252,27 @@
                     android:layout_margin="6dp"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:contentDescription="Other"
-                            android:src="@android:drawable/ic_menu_more" />
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📦"
+                            android:textSize="28sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Other"
+                            android:textSize="12sp"
                             android:textColor="@color/textPrimary" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
             </androidx.gridlayout.widget.GridLayout>
 
             <com.google.android.material.textfield.TextInputLayout

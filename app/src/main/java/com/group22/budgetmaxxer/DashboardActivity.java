@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class DashboardActivity extends AppCompatActivity { // Fixed capital 'P'
+public class DashboardActivity extends AppCompatActivity {
 
     private ExpenseViewModel mViewModel;
     private TextView tvMonthTotal;
@@ -27,6 +27,9 @@ public class DashboardActivity extends AppCompatActivity { // Fixed capital 'P'
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbarDashboard);
+        setSupportActionBar(toolbar); // ← add this
 
         tvMonthTotal = findViewById(R.id.tvMonthTotal);
         tvMonthLabel = findViewById(R.id.tvMonthLabel);
