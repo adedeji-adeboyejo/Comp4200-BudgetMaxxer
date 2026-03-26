@@ -97,7 +97,7 @@
                 android:layout_marginTop="8dp"
                 app:columnCount="3"
                 app:rowCount="2"
-                app:useDefaultMargins="true"
+                app:useDefaultMargins="true">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardCategoryFood"
