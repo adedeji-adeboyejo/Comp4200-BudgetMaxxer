@@ -8,6 +8,7 @@ Log daily expenses, organize them by category, browse your full spending history
 
 ## Demo
 
+https://uwin365-my.sharepoint.com/:v:/g/personal/marcusa_uwindsor_ca/IQDL8UB6dc-kQ7EcmNp0eId_AZaSDxQxLnZifdIKqLewi00?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=FMw2hh
 
 ---
 
